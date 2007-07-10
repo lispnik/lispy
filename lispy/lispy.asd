@@ -5,8 +5,8 @@
 
 (defsystem #:lispy
   :components ((:file "packages")
-               (:file "specials")
-               (:file "utils" :depends-on ("packages" "specials"))
+               (:file "specials" :depends-on ("packages"))
+               (:file "utils" :depends-on ("specials"))
                (:file "lispy" :depends-on ("utils")))
   :depends-on (#:drakma
                #:puri

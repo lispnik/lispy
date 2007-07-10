@@ -159,14 +159,15 @@
       (maphash #'(lambda (name install)
                    (declare (ignore name))
                    (if (null (asdf-paths install))
-                       (push (merge-pathnames (root install) *lispy-pathname*)
+                       (push (root install)
                              paths)
                        (dolist (path (asdf-paths install))
-                         (push (merge-pathnames path *lispy-pathname*)
+                         (push path
                                paths))))
                *lispy-installation*)
-      (print `(dolist (path ',paths)
-                (pushnew path asdf:*central-registry* :test 'equal))
+      (print `(let ((root (make-pathname :directory (pathname-directory *load-truename*))))
+                (dolist (path ',paths)
+                  (pushnew (merge-pathnames path root) asdf:*central-registry* :test 'equal)))
              stream))))
 
 (defgeneric fetch (module))
@@ -277,7 +278,7 @@
 ;;; Lispy bootstrap code (remove installation.lisp-expr, distfiles and
 ;;; all source directories)
 #+nil
-(dolist (name '(drakma puri gzip-stream archive ironclad cl-fad asdf))
+(dolist (name '(drakma puri gzip-stream archive ironclad cl-fad asdf lispy))
   (install (module-by-name name)))
 #+nil
 (initialize)
