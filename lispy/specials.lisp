@@ -3,8 +3,8 @@
 (defvar *lispy-map-url* (puri:parse-uri "http://common-lisp.net/project/lispy/repository/map.lisp-expr"))
 
 (defvar *lispy-pathname*
-  (make-pathname :name nil :type nil :version nil
-                 :defaults (parse-namestring *load-truename*)))
+  (let ((path (make-pathname :name nil :type nil :version nil :defaults (parse-namestring *load-truename*))))
+    (make-pathname :directory (butlast (pathname-directory path)) :defaults path)))
 
 (defvar *lispy-installation-pathname* (merge-pathnames #p"installation.lisp-expr" *lispy-pathname*))
 
