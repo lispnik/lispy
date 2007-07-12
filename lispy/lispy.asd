@@ -3,6 +3,8 @@
   (:use #:common-lisp
         #:asdf))
 
+(in-package #:lispy-system)
+
 (defsystem #:lispy
   :components ((:file "packages")
                (:file "specials" :depends-on ("packages"))
@@ -14,3 +16,6 @@
                #:archive
                #:ironclad
                #:cl-fad))
+
+(defmethod perform :after ((o load-op) (c (eql (find-system 'lispy))))
+  (funcall (intern "INITIALIZE" (find-package "LISPY"))))
