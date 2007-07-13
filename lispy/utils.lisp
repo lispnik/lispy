@@ -43,3 +43,11 @@
             (get-universal-time)
             (string-upcase name)
             (apply #'format nil (cons control-string format-arguments)))))
+
+(defun hash-to-list (hash)
+  (let ((result '()))
+    (maphash #'(lambda (k v)
+                 (declare (ignore k))
+                 (push v result))
+             hash)
+    result))
