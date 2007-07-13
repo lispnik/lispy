@@ -11,4 +11,28 @@
            #:install
            #:uninstall
            #:module-by-name
-           #:install-by-name))
+           #:install-by-name
+           #:list-map
+           #:list-installation
+           
+           #:name
+           #:homepage
+           #:description
+           #:versions
+           #:latest-version
+
+           #:our-version
+           #:version
+           #:source
+           #:md5sum
+           #:root
+           #:asdf-paths
+           #:dependencies
+
+           #:read-asdf-config
+           #:write-asdf-config
+           #:read-installation
+           #:write-installation
+           #:read-map
+
+           #:upgradable-p))
