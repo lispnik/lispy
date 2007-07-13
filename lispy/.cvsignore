@@ -1,0 +1,4 @@
+*.fasl
+*.lib
+*.fas
+*.x86f
