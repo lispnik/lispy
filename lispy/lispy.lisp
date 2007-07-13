@@ -265,6 +265,9 @@
   (remhash (name install) *lispy-installation*)
   (write-installation))
 
+(defun list-map () (hash-to-list *lispy-map*))
+(defun list-installation () (hash-to-list *lispy-installation*))
+
 (defun initialize ()
   (setf *lispy-installation* (make-hash-table :test 'eq)
         *lispy-map* (make-hash-table :test 'eq))
@@ -274,6 +277,13 @@
   (write-asdf-config)
   (read-asdf-config)
   (values))
+
+(defgeneric upgradable-p (install module))
+
+(defmethod upgradable-p ((install install) (module module))
+  (let ((latest-version (latest-version module)))
+    (> (our-version latest-version)
+       (our-version install))))
 
 ;; (initialize)
 ;; (install (module-by-name 'drakma))
