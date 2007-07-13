@@ -165,10 +165,17 @@
                          (push path
                                paths))))
                *lispy-installation*)
-      (print `(let ((root (make-pathname :directory (pathname-directory *load-truename*))))
-                (dolist (path ',paths)
-                  (pushnew (merge-pathnames path root) asdf:*central-registry* :test 'equal)))
-             stream))))
+      #+nil (print `(let ((root (make-pathname :directory (pathname-directory *load-truename*))))
+		      (dolist (path ',paths)
+			(pushnew (merge-pathnames path root) asdf:*central-registry* :test 'equal)))
+		   stream)
+      (format stream
+"(let ((root (make-pathname :directory (pathname-directory *load-truename*))))
+   (dolist (path '(~{~S~}))
+     (pushnew (merge-pathnames path root)
+              asdf:*central-registry* 
+              :test 'equal)))"
+              paths))))
 
 (defgeneric fetch (module))
 
