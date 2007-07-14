@@ -285,12 +285,14 @@
     (> (our-version latest-version)
        (our-version install))))
 
-;; (initialize)
-;; (install (module-by-name 'drakma))
-;; (install (module-by-name 'cl-plus))
-;; (uninstall (install-by-name 'chunga))
-
-
+(defmethod list-upgrades ()
+  (let ((result '()))
+    (dolist (i (list-installation))
+      (let ((module (module-by-name (name i))))
+        (when (and module
+                   (upgradable-p i module))
+          (push module result))))
+    result))
 
 ;;; Lispy bootstrap code (remove installation.lisp-expr, distfiles and
 ;;; all source directories)
