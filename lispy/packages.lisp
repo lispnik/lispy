@@ -14,13 +14,11 @@
            #:install-by-name
            #:list-map
            #:list-installation
-           
            #:name
            #:homepage
            #:description
            #:versions
            #:latest-version
-
            #:our-version
            #:version
            #:source
@@ -28,11 +26,12 @@
            #:root
            #:asdf-paths
            #:dependencies
-
            #:read-asdf-config
            #:write-asdf-config
            #:read-installation
            #:write-installation
            #:read-map
-
-           #:upgradable-p))
+           #:upgradable-p
+           #:list-upgrades
+           #:upgrade
+           #:upgrade-all))

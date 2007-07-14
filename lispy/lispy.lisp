@@ -171,7 +171,7 @@
 		   stream)
       (format stream
 "(let ((root (make-pathname :directory (pathname-directory *load-truename*))))
-   (dolist (path '(~{~S~}))
+   (dolist (path '(~{~S ~}))
      (pushnew (merge-pathnames path root)
               asdf:*central-registry* 
               :test 'equal)))"
@@ -263,7 +263,8 @@
 (defmethod uninstall ((install install))
   (cl-fad:delete-directory-and-files (merge-pathnames (root install) *lispy-pathname*) :if-does-not-exist :ignore)
   (remhash (name install) *lispy-installation*)
-  (write-installation))
+  (write-installation)
+  (values))
 
 (defun list-map () (hash-to-list *lispy-map*))
 (defun list-installation () (hash-to-list *lispy-installation*))
@@ -285,7 +286,7 @@
     (> (our-version latest-version)
        (our-version install))))
 
-(defmethod list-upgrades ()
+(defun list-upgrades ()
   (let ((result '()))
     (dolist (i (list-installation))
       (let ((module (module-by-name (name i))))
@@ -294,10 +295,34 @@
           (push module result))))
     result))
 
+(defgeneric upgrade (install))
+
+(defmethod upgrade ((install install))
+  (let ((module (module-by-name (name install))))
+    (if (upgradable-p install module)
+        (let ((latest-version (latest-version module)))
+          (log-message "upgrade" "Upgrading ~A from ~A to ~A"
+                       (name install)
+                       (version install)
+                       (version latest-version))
+          
+          (if (equal install (root latest-version))
+              (progn                    ;less ideal
+                (uninstall install)
+                (install latest-version))
+              (progn                    ;ideal
+                (install latest-version)                
+                (uninstall install))))
+        (log-message "upgrade" "~A ~A is already the latest version."
+                     (name install)
+                     (version install)))))
+
+(defun upgrade-all ()
+  (dolist (install (list-upgrades))
+    (upgrade install)))
+
 ;;; Lispy bootstrap code (remove installation.lisp-expr, distfiles and
 ;;; all source directories)
 #+nil
-(dolist (name '(drakma puri gzip-stream archive ironclad cl-fad asdf lispy))
+(dolist (name '(:drakma :puri :gzip-stream :archive :ironclad :cl-fad :asdf :lispy :cl+ssl :flexi-streams :trivial-gray-streams :chunga :salza :cffi :split-sequence :cl-base64))
   (install (module-by-name name)))
-#+nil
-(initialize)
