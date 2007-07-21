@@ -292,7 +292,7 @@
       (let ((module (module-by-name (name i))))
         (when (and module
                    (upgradable-p i module))
-          (push module result))))
+          (push (list i (latest-version module)) result))))
     result))
 
 (defgeneric upgrade (install))
@@ -318,8 +318,11 @@
                      (version install)))))
 
 (defun upgrade-all ()
-  (dolist (install (list-upgrades))
-    (upgrade install)))
+  (dolist (upgrade (list-upgrades))
+    (destructuring-bind (install version)
+        upgrade
+      (declare (ignore version))
+      (upgrade install))))
 
 ;;; Lispy bootstrap code (remove installation.lisp-expr, distfiles and
 ;;; all source directories)
