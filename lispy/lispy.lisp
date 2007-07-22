@@ -5,7 +5,8 @@
   ((name :initarg :name :reader name)
    (homepage :initarg :homepage :reader homepage)
    (description :initarg :description :reader description)
-   (versions :initarg :versions :reader versions)))
+   (versions :initarg :versions :reader versions)
+   (map-url :initarg :map-url :reader map-url)))
 
 (defgeneric latest-version (module))
 
@@ -35,6 +36,7 @@
 
 (defclass version ()
   ((name :initarg :name :reader name)
+   (map-url :initarg :map-url :reader map-url)
    (our-version :initarg :our-version :reader our-version)
    (version :initarg :version :reader version)
    (source :initarg :source :reader source)
@@ -56,20 +58,27 @@
 (defun module-by-name (name)
   (gethash name *lispy-map*))
 
-(defun read-map (&optional (map-url *lispy-map-url*))
-  (log-message "read-map" "Reading ~A" (uri-to-string *lispy-map-url*))
+(defun read-map (map-url)
+  (log-message "read-map" "Reading ~A" (uri-to-string map-url))
   (multiple-value-bind (stream status-code headers uri http-stream must-close)
       (drakma:http-request map-url :want-stream t)
     (declare (ignore status-code headers uri http-stream must-close))
     (unwind-protect
-         (dolist (module (mapcar #'parse-module (read stream)))
+         (dolist (module (mapcar #'(lambda (m)
+                                     (parse-module m map-url))
+                                 (read stream)))
            (setf (gethash (name module) *lispy-map*)
                  module))
-      (close stream)))
-  (log-message "read-map" "Map contains ~A entr~:@p" (hash-table-count *lispy-map*))
+      (close stream))))
+
+(defun read-maps (&optional (map-urls *lispy-map-urls*))
+  (dolist (map-url map-urls)
+    (read-map map-url))
+  (log-message "read-maps" "Map contains ~A entr~:@p"
+               (hash-table-count *lispy-map*))
   *lispy-map*)
 
-(defun parse-module (module)
+(defun parse-module (module map-url)
   (destructuring-bind (&key name homepage description versions)
       module
     (make-instance 'module
@@ -77,10 +86,11 @@
                    :homepage homepage
                    :description description
                    :versions (mapcar #'(lambda (v)
-                                         (parse-version name v))
-                                     versions))))
+                                         (parse-version name v map-url))
+                                     versions)
+                   :map-url map-url)))
 
-(defun parse-version (name version)
+(defun parse-version (name version map-url)
   (destructuring-bind (&key our-version version source md5sum root asdf-paths dependencies)
       version
     (make-instance 'version
@@ -91,7 +101,8 @@
                    :md5sum md5sum
                    :root root
                    :asdf-paths (or asdf-paths (list root))
-                   :dependencies dependencies)))
+                   :dependencies dependencies
+                   :map-url map-url)))
 
 (defclass install ()
   ((name :initarg :name :reader name)
@@ -184,7 +195,7 @@
   (fetch (latest-version module)))
 
 (defmethod fetch ((version version))
-  (log-message "fetch" "Fetching ~A" (uri-to-string (make-fetch-url (source version))))
+  (log-message "fetch" "Fetching ~A" (uri-to-string (make-fetch-url (source version) (map-url version))))
   (ensure-directories-exist *lispy-distfiles-pathname*)
   (let ((pathname (merge-pathnames (source version) *lispy-distfiles-pathname*)))
     (if (and (probe-file pathname )
@@ -194,7 +205,7 @@
                      (version version))
         (progn
           (multiple-value-bind (stream status-code headers uri http-stream must-close)
-              (drakma:http-request (make-fetch-url (source version))
+              (drakma:http-request (make-fetch-url (source version) (map-url version))
                                    :force-binary t
                                    :want-stream t)
             (declare (ignore status-code headers uri http-stream must-close))
@@ -209,10 +220,10 @@
           (unless (compare-to-md5sum pathname (md5sum version))
             (error "MD5 checksum for ~S failed" (source version)))))))
 
-(defun make-fetch-url (source)
-  (let ((parsed-path (append (butlast (puri:uri-parsed-path *lispy-map-url*))
+(defun make-fetch-url (source map-url)
+  (let ((parsed-path (append (butlast (puri:uri-parsed-path map-url))
                              (list "distfiles" source))))
-    (let ((result (puri:copy-uri *lispy-map-url*)))
+    (let ((result (puri:copy-uri map-url)))
       (setf (puri:uri-parsed-path result)
             parsed-path)
       result)))
@@ -273,7 +284,7 @@
   (setf *lispy-installation* (make-hash-table :test 'eq)
         *lispy-map* (make-hash-table :test 'eq))
   (log-message "initialize" "Initializing Lispy system on ~A ~A" (lisp-implementation-type) (lisp-implementation-version))
-  (read-map)
+  (read-maps)
   (read-installation)
   (write-asdf-config)
   (read-asdf-config)

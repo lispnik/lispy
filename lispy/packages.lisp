@@ -1,7 +1,7 @@
 
 (defpackage #:lispy
   (:use #:common-lisp)
-  (:export #:*lispy-map-url*
+  (:export #:*lispy-map-urls*
            #:*lispy-pathname*
            #:*lispy-installation-pathname*
            #:*lispy-asdf-config-pathname*
