@@ -7,9 +7,10 @@
 
 (defsystem #:lispy
   :components ((:file "packages")
-               (:file "specials" :depends-on ("packages"))
-               (:file "utils" :depends-on ("specials"))
-               (:file "lispy" :depends-on ("utils")))
+               (:file "utils")
+               (:file "specials")
+               (:file "lispy"))
+  :serial t
   :depends-on (#:drakma
                #:puri
                #:gzip-stream

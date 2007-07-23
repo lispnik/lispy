@@ -1,6 +1,13 @@
 
 (in-package #:lispy)
 
+(defun log-message (name control-string &rest format-arguments)
+  (when *lispy-log-stream*
+    (format *lispy-log-stream* "~&~A ~A: ~A~%"
+            (get-universal-time)
+            (string-upcase name)
+            (apply #'format nil (cons control-string format-arguments)))))
+
 (defclass module ()
   ((name :initarg :name :reader name)
    (homepage :initarg :homepage :reader homepage)

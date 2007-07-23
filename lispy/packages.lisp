@@ -7,6 +7,7 @@
            #:*lispy-asdf-config-pathname*
            #:*lispy-distfiles-pathname*
            #:*lispy-log-stream*
+           #:+lispy-default-map-url+
            #:initialize
            #:install
            #:uninstall

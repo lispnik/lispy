@@ -1,7 +1,9 @@
 (in-package #:lispy)
 
-(defvar *lispy-map-urls*
-  (list (puri:parse-uri "http://common-lisp.net/project/lispy/repository/map.lisp-expr")))
+(define-constant +lispy-default-map-url+
+    (puri:parse-uri "http://common-lisp.net/project/lispy/repository/map.lisp-expr"))
+
+(defvar *lispy-map-urls* (list +lispy-default-map-url+))
 
 (defvar *lispy-pathname*
   (let ((path (make-pathname :name nil :type nil :version nil :defaults (parse-namestring *load-truename*))))

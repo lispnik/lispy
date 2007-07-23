@@ -37,13 +37,6 @@
   (with-output-to-string (stream)
     (puri:render-uri uri stream)))
 
-(defun log-message (name control-string &rest format-arguments)
-  (when *lispy-log-stream*
-    (format *lispy-log-stream* "~&~A ~A: ~A~%"
-            (get-universal-time)
-            (string-upcase name)
-            (apply #'format nil (cons control-string format-arguments)))))
-
 (defun hash-to-list (hash)
   (let ((result '()))
     (maphash #'(lambda (k v)
@@ -51,3 +44,7 @@
                  (push v result))
              hash)
     result))
+
+(defmacro define-constant (name value &optional doc)
+  `(defconstant ,name (if (boundp ',name) (symbol-value ',name) ,value)
+     ,@(when doc (list doc))))
