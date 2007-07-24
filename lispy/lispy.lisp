@@ -141,17 +141,18 @@
                           :direction :output
                           :if-does-not-exist :create
                           :if-exists :supersede)
-    (print (let ((installation '()))
-             (maphash #'(lambda (name install)
-                          (push `(:name ,name
-                                        :our-version ,(our-version install)
-                                        :version ,(version install)
-                                        :root ,(root install)
-                                        :asdf-paths ,(asdf-paths install))
-                                installation))
-                      *lispy-installation*)
-             installation)
-           stream)))
+    (let ((*print-readably* t))
+      (print (let ((installation '()))
+               (maphash #'(lambda (name install)
+                            (push `(:name ,name
+                                          :our-version ,(our-version install)
+                                          :version ,(version install)
+                                          :root ,(root install)
+                                          :asdf-paths ,(asdf-paths install))
+                                  installation))
+                        *lispy-installation*)
+               installation)
+             stream))))
 
 (defun parse-install (install)
   (destructuring-bind (&key name our-version version root asdf-paths)
@@ -183,17 +184,11 @@
                          (push path
                                paths))))
                *lispy-installation*)
-      #+nil (print `(let ((root (make-pathname :directory (pathname-directory *load-truename*))))
-		      (dolist (path ',paths)
-			(pushnew (merge-pathnames path root) asdf:*central-registry* :test 'equal)))
-		   stream)
-      (format stream
-"(let ((root (make-pathname :directory (pathname-directory *load-truename*))))
-   (dolist (path '(~{~S ~}))
-     (pushnew (merge-pathnames path root)
-              asdf:*central-registry* 
-              :test 'equal)))"
-              paths))))
+      (let ((*print-readably* t))
+        (print `(let ((cl-user::root (make-pathname :directory (pathname-directory *load-truename*))))
+                  (dolist (cl-user::path ',paths)
+                    (pushnew (merge-pathnames cl-user::path cl-user::root) asdf:*central-registry* :test 'equal)))
+               stream)))))
 
 (defgeneric fetch (module))
 
