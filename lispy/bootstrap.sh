@@ -22,7 +22,7 @@ drakma-0.9.1-lispy.tar.gz
 flexi-streams-0.11.2-lispy.tar.gz
 gzip-stream_0.1-lispy.tar.gz
 ironclad_0.22-lispy.tar.gz
-lispy-0.2.tar.gz
+lispy-0.3.tar.gz
 puri-1.5.1-lispy.tar.gz
 salza-0.7.4-lispy.tar.gz
 split-sequence-2002-04-10-lispy.tar.gz
@@ -60,6 +60,7 @@ cat >>$TMP/load.lisp <<EOF
 (require :asdf)
 (load "$TMP/lispy-all/asdf-config.lisp")
 (asdf:oos 'asdf:load-op :lispy)
+(lispy:install (lispy:module-by-name :lispy))
 (quit)
 EOF
 
