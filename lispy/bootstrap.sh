@@ -5,14 +5,16 @@ set -x
 SOURCES='http://common-lisp.net/project/lispy/repository/distfiles'
 
 # (mapcar #'(lambda (module) 
-#             (let ((version (lispy:latest-version module)))
-#               (write-line (lispy:source version))))
-#         (sort (remove-duplicates(lispy::dependency-list (lispy:module-by-name :lispy)))
-#               #'string<
-#               :key #'lispy:name))
+# 	    (let ((version (lispy:latest-version module)))
+# 	      (write-line (lispy:source version))))
+# 	(sort (remove-duplicates (cons (lispy:module-by-name :asdf)
+# 				       (lispy::dependency-list (lispy:module-by-name :lispy))))
+# 	      #'string<
+# 	      :key #'lispy:name))
 
 DEPENDENCIES='
 archive_0.6.0-lispy.tar.gz
+asdf-1.108-lispy.tar.gz
 cffi-070620-lispy.tar.gz
 chunga-0.3.0-lispy.tar.gz
 cl+ssl-2007-07-07-lispy.tar.gz
@@ -56,6 +58,7 @@ cat >>$TMP/lispy-all/asdf-config.lisp <<EOF
 EOF
 cat $TMP/lispy-all/asdf-config.lisp
 
+cp $TMP/lispy-all/asdf-*/asdf.lisp $TMP/lispy-all/
 cat >>$TMP/load.lisp <<EOF
 (require :asdf)
 (load "$TMP/lispy-all/asdf-config.lisp")
