@@ -1,0 +1,37 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <title><!--#include virtual="project-name" --></title>
+  <link rel="stylesheet" type="text/css" href="style.css"/>
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"/>
+</head>
+
+<body>
+ <div class="header">
+   <h1><!--#include virtual="project-name" --></h1>
+ </div>
+
+ <h2>Design</h2>
+
+ <p>Lispy is a Common Lisp package management system similar to
+ clbuild, cllibrarian, ASDF-install, Edi Weitz's STARTER-PACK, clget,
+ Lispbox, Lisp in a Box, the package management systems in the Debian
+ and Gentoo Linux distributions and the Common Lisp Controller.  With
+ Lispy, a user can obtain a list of installable packages,
+ install/upgrade packages automatically and have an ASDF configuration
+ written for them.</p>
+
+ <p>Lispy was born out of my own experience with above systems, but
+ especially ASDF-Install and the Common Lisp Controller.  I wanted a
+ dependable list of Lisp packages that had gone through some level of
+ integration testing but I didn't want a Linux distribution dependent
+ or OS specific system.</p>
+
+ <p>Lispy consists of two components: The Lispy source code and a
+ respository containing a package map and packages.  The package map
+ contains package meta data and dependency information.  A Lispy
+ Package Map can be found in the root of a Lispy repository.  There
+ can be many maps (which can be merged), but the one offered by the
+   Lispy project is found here: <a href="http://common-lisp.net/project/lispy/repository/map.lisp-expr">http://common-lisp.net/project/lispy/repository/map.lisp-expr</a></p>
+</body>
+</html>
