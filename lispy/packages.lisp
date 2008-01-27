@@ -15,10 +15,12 @@
            #:install-by-name
            #:list-map
            #:list-installation
+	   #:module
            #:name
            #:homepage
            #:description
            #:versions
+	   #:version
            #:latest-version
            #:our-version
            #:version
@@ -35,4 +37,5 @@
            #:upgradable-p
            #:list-upgrades
            #:upgrade
-           #:upgrade-all))
+           #:upgrade-all)
+  (:documentation "Lispy is Common Lisp package management in Common Lisp."))
