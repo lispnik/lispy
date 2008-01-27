@@ -1,5 +1,12 @@
 #!/bin/bash
 
+BOOTSTRAP_VERSION=$1
+
+if [ -z "$BOOTSTRAP_VERSION" ]; then
+    echo "You must specificy the bootstrap version."
+    exit 1
+fi
+
 set -x
 
 SOURCES='http://common-lisp.net/project/lispy/repository/distfiles'
@@ -28,7 +35,7 @@ lispy-0.4.tar.gz
 puri-1.5.1.tar.gz
 salza-0.7.4.tar.gz
 split-sequence-2002-04-10.tar.gz
-trivial-gray-streams-2006-09-16-lispy.tar.gz
+trivial-gray-streams-2006-09-16.tar.gz
 usocket-0.3.5.tar.gz'
 
 TMP=`mktemp -d -t bootstrap.sh.XXXXXX`
@@ -69,8 +76,8 @@ EOF
 
 sbcl --no-userinit --no-sysinit --load $TMP/load.lisp
 
-DATE=`date -I`
-cp -a $TMP/lispy-all/ $TMP/lispy-all-$DATE
-find $TMP/lispy-all-$DATE -type f -name \*.fasl -print0 |xargs -0 rm -f
-rm -rf $TMP/lispy-all-$DATE/distfiles/*
-tar cfz ~/lispy-all-$DATE.tar.gz -C $TMP lispy-all-$DATE
+cp -a $TMP/lispy-all/ $TMP/lispy-all-$BOOTSTRAP_VERSION
+find $TMP/lispy-all-$BOOTSTRAP_VERSION -type f -name \*.fasl -print0 |xargs -0 rm -f
+rm -rf $TMP/lispy-all-$BOOTSTRAP_VERSION/distfiles/*
+tar cfz ~/lispy-all-$BOOTSTRAP_VERSION.tar.gz -C $TMP lispy-all-$BOOTSTRAP_VERSION
+
