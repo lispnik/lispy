@@ -13,23 +13,23 @@ SOURCES='http://common-lisp.net/project/lispy/repository/distfiles'
 # 	      :key #'lispy:name))
 
 DEPENDENCIES='
-archive_0.6.0-lispy.tar.gz
-asdf-1.108-lispy.tar.gz
-cffi-070620-lispy.tar.gz
-chunga-0.3.0-lispy.tar.gz
-cl+ssl-2007-07-07-lispy.tar.gz
-cl-base64-3.3.2-lispy.tar.gz
-cl-fad-0.6.0-lispy.tar.gz
-drakma-0.9.1-lispy.tar.gz
-flexi-streams-0.11.2-lispy.tar.gz
-gzip-stream_0.1-lispy.tar.gz
-ironclad_0.22-lispy.tar.gz
-lispy-0.3.tar.gz
-puri-1.5.1-lispy.tar.gz
-salza-0.7.4-lispy.tar.gz
-split-sequence-2002-04-10-lispy.tar.gz
+archive_0.6.0.tar.gz
+asdf-1.108.tar.gz
+cffi-070901.tar.gz
+chunga-0.4.1.tar.gz
+cl+ssl-2007-07-07.tar.gz
+cl-base64-3.3.2.tar.gz
+cl-fad-0.6.1.tar.gz
+drakma-0.11.1.tar.gz
+flexi-streams-0.13.1.tar.gz
+gzip-stream_0.1.tar.gz
+ironclad_0.23.tar.gz
+lispy-0.4.tar.gz
+puri-1.5.1.tar.gz
+salza-0.7.4.tar.gz
+split-sequence-2002-04-10.tar.gz
 trivial-gray-streams-2006-09-16-lispy.tar.gz
-usocket-0.3.3-lispy.tar.gz'
+usocket-0.3.5.tar.gz'
 
 TMP=`mktemp -d -t bootstrap.sh.XXXXXX`
 trap "rm -rf $TMP* 2>/dev/null" EXIT
