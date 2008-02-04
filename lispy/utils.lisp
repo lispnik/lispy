@@ -23,7 +23,7 @@
     (let ((archive (archive:open-archive 'archive:tar-archive stream)))
       (unwind-protect
            (archive:do-archive-entries (entry archive)
-	     (log-message 'extract-archive (archive:name entry))
+	     (log5:log-for extract "Extracting ~A" (archive:name entry))
              (when (archive:entry-regular-file-p entry)
                (extract-entry entry target-directory-pathname)))
         (close stream)))))

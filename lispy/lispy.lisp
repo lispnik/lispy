@@ -1,13 +1,6 @@
 
 (in-package #:lispy)
 
-(defun log-message (name control-string &rest format-arguments)
-  (when *lispy-log-stream*
-    (format *lispy-log-stream* "~&~A ~A: ~A~%"
-            (get-universal-time)
-            (string-upcase name)
-            (apply #'format nil (cons control-string format-arguments)))))
-
 (defclass module ()
   ((name :initarg :name
 	 :reader name
@@ -47,7 +40,7 @@
     (labels ((dependencies-of (name)
                (push (module-by-name name) dependencies)
                (let ((m (module-by-name name)))
-                (if m
+		 (if m
                      (dolist (d (dependencies (latest-version m)))
                        (dependencies-of d))
                      (error "No such module ~A found in map." name)))))
@@ -100,7 +93,7 @@
 
 (defun read-map (map-url)
   "Read the map at MAP-URL and merge the modules into *LISPY-MAP*."
-  (log-message "read-map" "Reading ~A" (uri-to-string map-url))
+  (log5:log-for map "Reading ~A" (uri-to-string map-url))
   (multiple-value-bind (stream status-code headers uri http-stream must-close)
       (drakma:http-request map-url :want-stream t)
     (declare (ignore status-code headers uri http-stream must-close))
@@ -117,8 +110,7 @@
 Returns the mutated *LISPY-MAPS*."
   (dolist (map-url map-urls)
     (read-map map-url))
-  (log-message "read-maps" "Map contains ~A entr~:@p"
-               (hash-table-count *lispy-map*))
+  (log5:log-for map "Maps contain contains ~A entr~:@p" (hash-table-count *lispy-map*))
   *lispy-map*)
 
 (defun parse-module (module map-url)
@@ -173,19 +165,19 @@ Returns the mutated *LISPY-MAPS*."
 
 (defun read-installation ()
   "Read the installation file into *LISPY-INSTALLATION*"
-  (log-message "read-installation" "Reading ~A" (namestring *lispy-installation-pathname*))
+  (log5:log-for installation "Reading ~A" (namestring *lispy-installation-pathname*))
   (with-open-file (stream *lispy-installation-pathname*
                           :direction :input
                           :if-does-not-exist :create)
     (dolist (install (mapcar #'parse-install (read-stream stream nil nil)))
       (setf (gethash (name install) *lispy-installation*)
             install)))
-  (log-message "read-installation" "Map contains ~A entr~:@p" (hash-table-count *lispy-installation*))
+  (log5:log-for installation "Installation contains ~A entr~:@p" (hash-table-count *lispy-installation*))
   *lispy-installation*)
 
 (defun write-installation ()
   "Write *LISPY-INSTALLATION* to the installtaion file."
-  (log-message "write-installation" "Writing ~A" (namestring *lispy-installation-pathname*))
+  (log5:log-for installation "Writing ~A" (namestring *lispy-installation-pathname*))
   (with-open-file (stream *lispy-installation-pathname*
                           :direction :output
                           :if-does-not-exist :create
@@ -216,13 +208,13 @@ Returns the mutated *LISPY-MAPS*."
 (defun read-asdf-config ()
   "Load the Lispy ASDF configuration, which in turn adds paths to
 ASDF:*CENTRAL-REGISTRY*."
-  (log-message "read-asdf-config" "Loading ~A" (namestring *lispy-asdf-config-pathname*))
+  (log5:log-for asdf "Loading ~A" (namestring *lispy-asdf-config-pathname*))
   (load *lispy-asdf-config-pathname*))
 
 (defun write-asdf-config ()
   "Write a Lispy ASDF configuration file which can be loaded
 indepedent of Lispy."
-  (log-message "write-asdf-config" "Writing ~A" (namestring *lispy-asdf-config-pathname*))
+  (log5:log-for asdf "Writing ~A" (namestring *lispy-asdf-config-pathname*))
   (with-open-file (stream *lispy-asdf-config-pathname*
                           :direction :output
                           :if-does-not-exist :create
@@ -247,18 +239,18 @@ indepedent of Lispy."
   (:documentation "Download Lisp package source."))
 
 (defmethod fetch ((module module))
-  (log-message "fetch" "Fetching ~A" (name module))
+  (log5:log-for fetch "Fetching ~A" (name module))
   (fetch (latest-version module)))
 
 (defmethod fetch ((version version))
-  (log-message "fetch" "Fetching ~A" (uri-to-string (make-fetch-url (source version) (map-url version))))
+  (log5:log-for fetch "Fetching ~A" (uri-to-string (make-fetch-url (source version) (map-url version))))
   (ensure-directories-exist *lispy-distfiles-pathname*)
   (let ((pathname (merge-pathnames (source version) *lispy-distfiles-pathname*)))
     (if (and (probe-file pathname )
              (compare-to-md5sum pathname (md5sum version)))
-        (log-message "fetch" "~A already exists and matches the version ~A MD5 checksum."
-                     pathname
-                     (version version))
+        (log5:log-for fetch "~A already exists and matches the version ~A MD5 checksum."
+		      pathname
+		      (version version))
         (progn
           (multiple-value-bind (stream status-code headers uri http-stream must-close)
               (drakma:http-request (make-fetch-url (source version) (map-url version))
@@ -288,7 +280,7 @@ indepedent of Lispy."
   (:documentation "Install Lisp package source."))
 
 (defmethod install ((module module))
-  (log-message "install" "Installing ~A" (name module))
+  (log5:log-for install "Installing ~A" (name module))
   (dolist (module (remove-duplicates (dependency-list module)))
     (install (latest-version module))))
 
@@ -296,9 +288,9 @@ indepedent of Lispy."
   (if (and (install-by-name (name version))
            (= (our-version (install-by-name (name version)))
               (our-version version)))
-      (log-message "install" "Already installed ~A ~A." (name version) (version version))
+      (log5:log-for install "Already installed ~A ~A." (name version) (version version))
       (progn
-        (log-message "install" "Installing ~A ~A" (name version) (version version))
+        (log5:log-for install "Installing ~A ~A" (name version) (version version))
         (fetch version)
         (extract version)
         (setf (gethash (name version) *lispy-installation*)
@@ -316,11 +308,11 @@ indepedent of Lispy."
   (:documentation "Extract Lisp package source."))
 
 (defmethod extract ((module module))
-  (log-message "extract" "Extracting ~A" (name module))
+  (log5:log-for extract "Extracting ~A" (name module))
   (extract (latest-version module)))
 
 (defmethod extract ((version version))
-  (log-message "extract" "Extracting ~A ~A" (name version) (version version))
+  (log5:log-for extract "Extracting ~A ~A" (name version) (version version))
   (let ((pathname (merge-pathnames (source version) *lispy-distfiles-pathname*)))
     (extract-archive pathname *lispy-pathname*)))
 
@@ -351,7 +343,7 @@ indepedent of Lispy."
 configuration file and updates ASDF:*CENTRAL-REGISTRY*."
   (setf *lispy-installation* (make-hash-table :test 'eq)
         *lispy-map* (make-hash-table :test 'eq))
-  (log-message "initialize" "Initializing Lispy system on ~A ~A" (lisp-implementation-type) (lisp-implementation-version))
+  (log5:log-for all-categories "Initializing Lispy system on ~A ~A" (lisp-implementation-type) (lisp-implementation-version))
   (read-maps)
   (read-installation)
   (write-asdf-config)
@@ -383,16 +375,16 @@ configuration file and updates ASDF:*CENTRAL-REGISTRY*."
   (let ((module (module-by-name (name install))))
     (if (upgradable-p install module)
         (let ((latest-version (latest-version module)))
-          (log-message "upgrade" "Upgrading ~A from ~A to ~A"
-                       (name install)
-                       (version install)
-                       (version latest-version))
+          (log5:log-for upgrade "Upgrading ~A from ~A to ~A"
+			(name install)
+			(version install)
+			(version latest-version))
           ;; FIXME: this needs to be transactional
 	  (uninstall install)
 	  (install latest-version))
-        (log-message "upgrade" "~A ~A is already the latest version."
-                     (name install)
-                     (version install)))))
+        (log5:log-for upgrade "~A ~A is already the latest version."
+		      (name install)
+		      (version install)))))
 
 (defun upgrade-all ()
   "Upgrade all upgradable Lisp source packages."
