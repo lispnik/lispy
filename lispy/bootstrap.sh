@@ -36,7 +36,8 @@ puri-1.5.1.tar.gz
 salza-0.7.4.tar.gz
 split-sequence-2002-04-10.tar.gz
 trivial-gray-streams-2006-09-16.tar.gz
-usocket-0.3.5.tar.gz'
+usocket-0.3.5.tar.gz
+log5_0.3.1.tar.gz'
 
 TMP=`mktemp -d -t bootstrap.sh.XXXXXX`
 trap "rm -rf $TMP* 2>/dev/null" EXIT

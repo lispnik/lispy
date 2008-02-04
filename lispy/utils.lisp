@@ -23,6 +23,7 @@
     (let ((archive (archive:open-archive 'archive:tar-archive stream)))
       (unwind-protect
            (archive:do-archive-entries (entry archive)
+	     (log-message 'extract-archive (archive:name entry))
              (when (archive:entry-regular-file-p entry)
                (extract-entry entry target-directory-pathname)))
         (close stream)))))
@@ -48,3 +49,7 @@
 (defmacro define-constant (name value &optional doc)
   `(defconstant ,name (if (boundp ',name) (symbol-value ',name) ,value)
      ,@(when doc (list doc))))
+
+(defun read-stream (stream &rest args)
+  (let ((*read-eval* nil))
+    (apply #'read stream args)))

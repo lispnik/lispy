@@ -47,7 +47,7 @@
     (labels ((dependencies-of (name)
                (push (module-by-name name) dependencies)
                (let ((m (module-by-name name)))
-                 (if m
+                (if m
                      (dolist (d (dependencies (latest-version m)))
                        (dependencies-of d))
                      (error "No such module ~A found in map." name)))))
@@ -107,7 +107,7 @@
     (unwind-protect
          (dolist (module (mapcar #'(lambda (m)
                                      (parse-module m map-url))
-                                 (read stream)))
+                                 (read-stream stream)))
            (setf (gethash (name module) *lispy-map*)
                  module))
       (close stream))))
@@ -177,7 +177,7 @@ Returns the mutated *LISPY-MAPS*."
   (with-open-file (stream *lispy-installation-pathname*
                           :direction :input
                           :if-does-not-exist :create)
-    (dolist (install (mapcar #'parse-install (read stream nil nil)))
+    (dolist (install (mapcar #'parse-install (read-stream stream nil nil)))
       (setf (gethash (name install) *lispy-installation*)
             install)))
   (log-message "read-installation" "Map contains ~A entr~:@p" (hash-table-count *lispy-installation*))

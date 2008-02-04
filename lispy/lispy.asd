@@ -7,6 +7,7 @@
 
 (defsystem #:lispy
   :components ((:file "packages")
+	       (:file "logging")
                (:file "utils")
                (:file "specials")
                (:file "lispy"))
@@ -16,7 +17,8 @@
                #:gzip-stream
                #:archive
                #:ironclad
-               #:cl-fad))
+               #:cl-fad
+ 	       #:log5))
 
 (defmethod perform :after ((o load-op) (c (eql (find-system 'lispy))))
   (let ((lispy-config (merge-pathnames #p".lispy.lisp"(user-homedir-pathname))))
