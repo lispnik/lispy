@@ -20,7 +20,7 @@ SOURCES='http://common-lisp.net/project/lispy/repository/distfiles'
 # 	      :key #'lispy:name))
 
 DEPENDENCIES='
-archive_0.6.0.tar.gz
+archive_0.7.0.tar.gz
 asdf-1.108.tar.gz
 cffi-070901.tar.gz
 chunga-0.4.1.tar.gz
