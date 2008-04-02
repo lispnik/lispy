@@ -91,25 +91,49 @@
   "Returns the instance of MODULE described by NAME."
   (gethash name *lispy-map*))
 
-(defun read-map (map-url)
-  "Read the map at MAP-URL and merge the modules into *LISPY-MAP*."
-  (log5:log-for map "Reading ~A" (uri-to-string map-url))
-  (multiple-value-bind (stream status-code headers uri http-stream must-close)
-      (drakma:http-request map-url :want-stream t)
-    (declare (ignore status-code headers uri http-stream must-close))
-    (unwind-protect
-         (dolist (module (mapcar #'(lambda (m)
-                                     (parse-module m map-url))
-                                 (read-stream stream)))
-           (setf (gethash (name module) *lispy-map*)
-                 module))
-      (close stream))))
+(defun read-map (map-url map-pathname)
+  "Read the map at MAP-PATHNAME and merge the modules into *LISPY-MAP*."
+  (log5:log-for map "Reading ~A" map-pathname)
+  (with-open-file (stream map-pathname :direction :input)
+    (dolist (module (mapcar #'(lambda (m)
+				(parse-module m map-url))
+			    (read-stream stream)))
+      (setf (gethash (name module) *lispy-map*)
+	    module))))
+
+(defun download-map (map-url)
+  (log5:log-for map "Fetching ~A" (uri-to-string map-url))
+  (let* ((map-name (car (last (puri:uri-parsed-path map-url))))
+	 (map-pathname (merge-pathnames map-name
+					(merge-pathnames #p"maps/" *lispy-pathname*))))
+    (download-file map-url map-pathname)
+    map-pathname))
+
+(defun download-map-signature (map-url)
+  (let* ((map-signature-name (format nil "~A.asc" (car (last (puri:uri-parsed-path map-url)))))
+	 (map-signature-url (puri:merge-uris (puri:parse-uri map-signature-name) map-url))
+	 (map-signature-pathname (merge-pathnames map-signature-name
+						  (merge-pathnames #p"maps/" *lispy-pathname*))))
+    (log5:log-for map "Fetching ~A" (uri-to-string map-signature-url))
+    (download-file map-signature-url map-signature-pathname)
+    map-signature-pathname))
 
 (defun read-maps (&optional (map-urls *lispy-map-urls*))
   "Read all maps in the list MAP-URLS, merging each map into *LISPY-MAPS*.
 Returns the mutated *LISPY-MAPS*."
   (dolist (map-url map-urls)
-    (read-map map-url))
+    (let ((map (download-map map-url))
+	  (map-signature (download-map-signature map-url)))
+      (multiple-value-bind (success message)
+	  (verify-signature map map-signature)
+	(dolist (line (split-sequence:split-sequence #\Newline message :remove-empty-subseqs t))
+	  (log5:log-for map line))
+	(unless success
+	  (error "GPG verification of map ~A with signature ~A failed: ~A"
+		 map
+		 map-signature
+		 message)))
+      (read-map map-url map)))
   (log5:log-for map "Maps contain contains ~A entr~:@p" (hash-table-count *lispy-map*))
   *lispy-map*)
 

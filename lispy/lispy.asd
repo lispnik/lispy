@@ -18,7 +18,8 @@
                #:archive
                #:ironclad
                #:cl-fad
- 	       #:log5))
+ 	       #:log5
+	       #:trivial-shell))
 
 (defmethod perform :after ((o load-op) (c (eql (find-system 'lispy))))
   (let ((lispy-config (merge-pathnames #p".lispy.lisp"(user-homedir-pathname))))

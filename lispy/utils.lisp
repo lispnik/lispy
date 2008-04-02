@@ -53,3 +53,23 @@
 (defun read-stream (stream &rest args)
   (let ((*read-eval* nil))
     (apply #'read stream args)))
+
+(defun download-file (url destination-pathname)
+  (ensure-directories-exist destination-pathname)
+  (multiple-value-bind (stream status-code headers uri http-stream must-close)
+      (drakma:http-request url :want-stream t)
+    (declare (ignore status-code headers uri http-stream must-close))
+    (unwind-protect
+	 (with-open-file (output-stream destination-pathname
+					:direction :output
+					:element-type '(unsigned-byte 8)
+					:if-exists :supersede)
+	   (copy-stream stream output-stream))
+      (close stream))))
+
+(defun verify-signature (text-pathname signature-pathname)
+  (multiple-value-bind (output error status)
+       (trivial-shell:shell-command (format nil "gpg --verify ~A ~A" signature-pathname text-pathname))
+    (declare (ignore output))
+    (values (zerop status)
+	    error)))
