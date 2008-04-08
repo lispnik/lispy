@@ -22,7 +22,7 @@ SOURCES='http://common-lisp.net/project/lispy/repository/distfiles'
 DEPENDENCIES='
 archive_0.7.0.tar.gz
 asdf-1.108.tar.gz
-cffi-070901.tar.gz
+cffi_0.9.2.tar.gz
 chunga-0.4.1.tar.gz
 cl+ssl-2007-07-07.tar.gz
 cl-base64-3.3.2.tar.gz
