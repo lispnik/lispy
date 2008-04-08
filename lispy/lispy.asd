@@ -6,6 +6,9 @@
 (in-package #:lispy-system)
 
 (defsystem #:lispy
+  :description "Common Lisp library management in Common Lisp"
+  :author "Matthew Kennedy"
+  :licence "GPL"
   :components ((:file "packages")
 	       (:file "logging")
                (:file "utils")
