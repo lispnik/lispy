@@ -1,0 +1,22 @@
+
+* GPGME-CL
+
+Had to define gpgme::translate-to-foreign (value (type (eql
+'gpgme::gpgme-data-t).  Need to figure out why and suggest a patch.
+
+* GPGME-CL
+
+The GPGME source archive includes lang/cl for a Common Lisp ASDF
+system.  It is not directly usable by Lispy since it depends on an AWK
+script for converting C error code files to a Common Lisp source file.
+It looks like it was designed for installation into
+/usr/share/common-lisp/source which is a Debian/Gentoo Common Lisp
+Controller path.
+
+A (hopefully) short-lived fork of GPGME-CL is used by Lispy which
+includes the C error files but parses them at compile time (all in
+Lisp, not AWK) to create the necessary bindings.  Need to figure out
+how to integrate that with GPGME upstream so that both approaches can
+work.
+
+http://common-lisp.net/project/lispy/repository/distfiles/lispy-gpgme.tar.gz

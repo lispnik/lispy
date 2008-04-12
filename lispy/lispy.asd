@@ -13,6 +13,7 @@
 	       (:file "logging")
                (:file "utils")
                (:file "specials")
+	       (:file "gpgme")
                (:file "lispy"))
   :serial t
   :depends-on (#:drakma
@@ -22,7 +23,8 @@
                #:ironclad
                #:cl-fad
  	       #:log5
-	       #:trivial-shell))
+	       #:gpgme
+	       #:cffi))
 
 (defmethod perform :after ((o load-op) (c (eql (find-system 'lispy))))
   (let ((lispy-config (merge-pathnames #p".lispy.lisp"(user-homedir-pathname))))

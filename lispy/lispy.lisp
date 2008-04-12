@@ -118,21 +118,24 @@
     (download-file map-signature-url map-signature-pathname)
     map-signature-pathname))
 
+(defun verify-map (map-signature map map-signature-url)
+  (let ((result (verify-signature map-signature map)))
+    (dolist (signature (getf (cadr result) :signatures))
+      (if (member :green (getf signature :summary))
+	  (log5:log-for map "GPG validation success ~A" (uri-to-string map-signature-url))
+	  (error "GPG verification of map ~A with signature ~A failed: ~S"
+		 map
+		 map-signature
+		 signature))))
+  (values))
+
 (defun read-maps (&optional (map-urls *lispy-map-urls*))
   "Read all maps in the list MAP-URLS, merging each map into *LISPY-MAPS*.
 Returns the mutated *LISPY-MAPS*."
   (dolist (map-url map-urls)
     (let ((map (download-map map-url))
 	  (map-signature (download-map-signature map-url)))
-      (multiple-value-bind (success message)
-	  (verify-signature map map-signature)
-	(dolist (line (split-sequence:split-sequence #\Newline message :remove-empty-subseqs t))
-	  (log5:log-for map line))
-	(unless success
-	  (error "GPG verification of map ~A with signature ~A failed: ~A"
-		 map
-		 map-signature
-		 message)))
+      (verify-map map-signature map map-url)
       (read-map map-url map)))
   (log5:log-for map "Maps contain contains ~A entr~:@p" (hash-table-count *lispy-map*))
   *lispy-map*)
