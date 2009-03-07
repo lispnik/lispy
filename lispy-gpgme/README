@@ -1,0 +1,24 @@
+
+* Introduction
+
+This is a fork of the Common Lisp bindings in GPGME 1.1.4 and
+LIBGPG-ERROR 1.6.  The goal of this project is to produce an ASDF
+installable, or Lispy installable version of GPGME-CL which does not
+require external tools (such as AWK).
+
+It would be good to somehow merge this back into upstream so their own
+source archives are ASDF installable.
+
+* Differences With Upstream
+
+gpg-error-parse.lisp   parse .in files and define-errors macro for
+                       creating the defcenum form
+gpg-error.asd          include gpg-error-parse.lisp component
+gpg-error-codes.lisp   include template from AWK script, call
+                       define-errors
+gpg-error.lisp         c-gpg-err-code-from-syserror CFFI fix (for no
+                       args, omit args list entirely)
+
+* Dependencies
+
+CFFI 0.9.2 (later snapshots will probably not work)
