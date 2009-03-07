@@ -37,5 +37,6 @@
            #:upgradable-p
            #:list-upgrades
            #:upgrade
-           #:upgrade-all)
+           #:upgrade-all
+           #:search-map)
   (:documentation "Lispy is Common Lisp package management in Common Lisp."))

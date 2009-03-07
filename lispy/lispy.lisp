@@ -364,6 +364,13 @@ indepedent of Lispy."
   "Return the list of installed modules versions."
   (hash-to-list *lispy-installation*))
 
+(defun search-map (regexp)
+  "Search the combined map for a given regular expression."
+  (remove-if-not #'(lambda (name)
+                     (cl-ppcre:scan regexp (string-downcase (symbol-name name))))
+                 (list-map)
+                 :key 'name))
+
 (defun initialize ()
   "Initialize Lispy.  This reads and merges all maps in
 *LISPY-MAP-URLS*, reads the installation, writes a fresh ASDF
