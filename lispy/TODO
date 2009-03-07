@@ -20,3 +20,8 @@ how to integrate that with GPGME upstream so that both approaches can
 work.
 
 http://common-lisp.net/project/lispy/repository/distfiles/lispy-gpgme.tar.gz
+
+* Dependency Resolution During Upgrade
+
+cl-ppcre 2.0.0 depended on new package cl-unicode, but cl-unicode
+wasn't installed when cl-ppcre was upgraded to 2.0.0.
