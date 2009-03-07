@@ -24,7 +24,8 @@
                #:cl-fad
  	       #:log5
 	       #:gpgme
-	       #:cffi))
+	       #:cffi
+               #:cl-ppcre))
 
 (defmethod perform :after ((o load-op) (c (eql (find-system 'lispy))))
   (let ((lispy-config (merge-pathnames #p".lispy.lisp"(user-homedir-pathname))))
