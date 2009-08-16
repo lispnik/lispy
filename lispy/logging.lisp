@@ -9,15 +9,18 @@
 (log5:defcategory installation)
 (log5:defcategory asdf)
 (log5:defcategory fetch)
+(log5:defcategory verify)
 
-(log5:defcategory all-categories (install uninstall upgrade extract map installation asdf fetch))
+(log5:defcategory all-categories (install uninstall upgrade extract map installation asdf fetch verify))
 
 (log5:defoutput newline (format nil "~%"))
 
+;; 2009-08-06 01:13:00
+
 (log5:defoutput time-hms
     (multiple-value-bind (second minute hour day month year)
-	(decode-universal-time (get-universal-time))
-      (format nil "~D:~2,'0D:~2,'0D" hour minute second)))
+	 (decode-universal-time (get-universal-time))
+       (format nil "~D-~2,'0D-~2,'0D ~2,'0D:~2,'0D:~2,'0D" year month day hour minute second)))
 
 (log5:start-sender 'debug
 	      (log5:stream-sender :location *error-output*)

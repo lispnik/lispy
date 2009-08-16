@@ -5,6 +5,16 @@
 
 (in-package #:lispy-system)
 
+;; *features* documentation:
+;; 
+;;   lispy-gnupg     - signature verification via GnuPG command-line tools (default)
+;;   lispy-gpgme     - signature verification via GPGME CFFI interface
+;;   lispy-insecure  - ignore signatures entirely
+
+#-(or lispy-gnupg lispy-gpgme lispy-insecure)
+(pushnew :lispy-gnupg *features*)
+  
+
 (defsystem #:lispy
   :description "Common Lisp library management in Common Lisp"
   :author "Matthew Kennedy"
@@ -13,7 +23,7 @@
 	       (:file "logging")
                (:file "utils")
                (:file "specials")
-	       (:file "gpgme")
+	       (:file "verify")
                (:file "lispy"))
   :serial t
   :depends-on (#:drakma
@@ -23,7 +33,8 @@
                #:ironclad
                #:cl-fad
  	       #:log5
-	       #:gpgme
+	       #+lispy-gpgme #:gpgme
+	       #+lispy-gnupg #:trivial-shell
 	       #:cffi
                #:cl-ppcre))
 

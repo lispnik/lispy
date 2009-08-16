@@ -66,11 +66,3 @@
 					:if-exists :supersede)
 	   (copy-stream stream output-stream))
       (close stream))))
-
-#+nil
-(defun verify-signature (text-pathname signature-pathname)
-  (multiple-value-bind (output error status)
-       (trivial-shell:shell-command (format nil "gpg --verify ~A ~A" signature-pathname text-pathname))
-    (declare (ignore output))
-    (values (zerop status)
-	    error)))

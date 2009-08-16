@@ -24,3 +24,5 @@
 (defvar *lispy-log-stream* t
   "A stream Lispy should use to write log messages.")
 
+(defvar *lispy-offline* nil
+  "If non-nil then online operations such as map and library downloads are skipped.")
