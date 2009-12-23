@@ -31,7 +31,7 @@ drakma-0.11.1.tar.gz
 flexi-streams-0.13.1.tar.gz
 gzip-stream_0.1.tar.gz
 ironclad_0.23.tar.gz
-lispy-0.4.tar.gz
+lispy-0.5.tar.gz
 puri-1.5.1.tar.gz
 salza-0.7.4.tar.gz
 split-sequence-2002-04-10.tar.gz
